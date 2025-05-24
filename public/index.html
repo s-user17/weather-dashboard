@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weather Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("background.jpg"); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px;
+      color: #fff;
+    }
+    .container {
+      max-width: 500px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      color: #000;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      width: 60%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    button:hover {
+      background-color: #0277bd;
+    }
+    #result {
+      margin-top: 20px;
+    }
+    #flag {
+      vertical-align: middle;
+      margin-left: 8px;
+      height: 24px;
+      width: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather Dashboard</h1>
+    <form id="weatherForm">
+      <input type="text" id="city" placeholder="Enter city name" required />
+      <button type="submit">Get Weather</button>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById("weatherForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const city = document.getElementById("city").value.trim();
+      if (!city) return;
+
+      const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+      const data = await res.json();
+
+      const resultDiv = document.getElementById("result");
+
+      if (data.main) {
+        const flagImg = data.flagUrl ? `<img id="flag" src="${data.flagUrl}" alt="Flag of ${data.sys.country}" />` : "";
+        resultDiv.innerHTML = `
+          <h3>${data.name}, ${data.sys.country} ${flagImg}</h3>
+          <p>Temperature: ${data.main.temp} °C</p>
+          <p>Weather: ${data.weather[0].main}</p>
+        `;
+      } else {
+        resultDiv.innerText = "City not found or API error.";
+      }
+    });
+  </script>
+</body>
+</html>
